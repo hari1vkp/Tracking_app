@@ -125,17 +125,12 @@ const RouteManager = () => {
         setView('list');
     };
 
-    return (
-        <div className="h-full flex flex-col">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Route Management</h2>
-                <div>
-                     <button 
-                        onClick={() => setView('list')}
-                        className={`px-4 py-2 rounded mr-2 ${view === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'}`}
-                    >
-                        List
-                    </button>
+    // VIEW 1: LIST DASHBOARD
+    if (view === 'list') {
+        return (
+            <div className="h-full flex flex-col bg-gray-50 p-6 overflow-hidden">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800 tracking-tight">Route Management</h2>
                     <button 
                         onClick={() => {
                             setEditId(null);
@@ -146,139 +141,177 @@ const RouteManager = () => {
                             setStopLng('');
                             setView('create');
                         }}
-                        className={`px-4 py-2 rounded ${view === 'create' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'}`}
+                        className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 font-medium transition-all shadow-sm active:scale-95 flex items-center gap-2"
                     >
-                        Create New
+                        <span>+</span> Create New Route
                     </button>
                 </div>
-            </div>
 
-            <div className="flex-1 overflow-auto">
-                {view === 'list' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {loading ? <p>Loading routes...</p> : routes.map(route => (
-                            <div key={route.id} className="bg-white p-4 rounded-lg shadow relative group">
-                                <h3 className="font-bold text-lg mb-2">{route.name}</h3>
-                                <p className="text-gray-500 text-sm">{route.stops.length} Stops</p>
-                                <div className="mt-2 text-xs text-gray-400">
+                <div className="flex-1 overflow-y-auto min-h-0 pr-2 custom-scrollbar">
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {loading ? <p className="text-gray-400">Loading routes...</p> : routes.map(route => (
+                            <div key={route.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative group">
+                                <div className="flex justify-between items-start mb-4">
+                                    <h3 className="font-bold text-xl text-gray-800">{route.name}</h3>
+                                    <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                                        {route.stops.length} Stops
+                                    </span>
+                                </div>
+                                <div className="text-sm text-gray-500 line-clamp-2 min-h-[40px]">
                                     {route.stops.map(s => s.name).join(' → ')}
                                 </div>
-                                <button 
-                                    onClick={() => handleEdit(route)}
-                                    className="absolute top-4 right-4 text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    Edit
-                                </button>
-                            </div>
-                        ))}
-                        {routes.length === 0 && !loading && <p>No routes found. Create one!</p>}
-                    </div>
-                )}
-
-                {view === 'create' && (
-                    <div className="bg-white p-6 rounded-lg shadow max-w-4xl mx-auto flex flex-col lg:flex-row gap-6">
-                        <div className="flex-1 space-y-4">
-                            <h2 className="text-lg font-semibold">{editId ? 'Edit Route' : 'Create Route'}</h2>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Route Name</label>
-                                <input 
-                                    className="w-full border p-2 rounded" 
-                                    value={routeName} 
-                                    onChange={e => setRouteName(e.target.value)} 
-                                    placeholder="e.g. Route 5 - Downtown"
-                                />
-                            </div>
-                            
-                            <hr className="my-4"/>
-                            
-                            <h3 className="text-md font-medium">Add Stops</h3>
-                            <div className="grid grid-cols-2 gap-2">
-                                <input 
-                                    className="border p-2 rounded" 
-                                    value={stopName} 
-                                    onChange={e => setStopName(e.target.value)} 
-                                    placeholder="Stop Name"
-                                />
-                                <div className="flex gap-2">
-                                    <input 
-                                        className="border p-2 rounded w-1/2 bg-gray-100 cursor-not-allowed" 
-                                        value={stopLat} 
-                                        // onChange={e => setStopLat(e.target.value)} // Disabled manual input
-                                        readOnly
-                                        placeholder="Click on Map"
-                                    />
-                                    <input 
-                                        className="border p-2 rounded w-1/2 bg-gray-100 cursor-not-allowed" 
-                                        value={stopLng} 
-                                        // onChange={e => setStopLng(e.target.value)} // Disabled manual input
-                                        readOnly
-                                        placeholder="Click on Map"
-                                    />
+                                <div className="mt-6 pt-4 border-t border-gray-50 flex justify-end">
+                                    <button 
+                                        onClick={() => handleEdit(route)}
+                                        className="text-blue-600 hover:text-blue-800 font-semibold text-sm transition-colors"
+                                    >
+                                        Edit Details &rarr;
+                                    </button>
                                 </div>
                             </div>
-                            <button onClick={handleAddStop} className="bg-gray-200 px-4 py-2 rounded text-sm w-full hover:bg-gray-300">
-                                Add Stop
-                            </button>
+                        ))}
+                        {routes.length === 0 && !loading && (
+                            <div className="col-span-full text-center py-20 text-gray-400">
+                                <p>No routes found. Create your first route!</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
-                            <div className="mt-4">
-                                <h4 className="font-sm text-gray-600 mb-2">Stops Sequence:</h4>
-                                <ul className="list-decimal pl-5 space-y-1 text-sm max-h-40 overflow-auto">
-                                    {stops.map((s, i) => (
-                                        <li key={i} className="flex justify-between">
-                                            <span>{s.name}</span>
-                                            <button 
-                                                onClick={() => setStops(stops.filter((_, idx) => idx !== i))}
-                                                className="text-red-500 text-xs hover:underline"
-                                            >
-                                                Remove
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            
-                            <div className="flex gap-2 mt-4">
-                                <button 
-                                    onClick={handleSaveRoute} 
-                                    disabled={!routeName || stops.length === 0}
-                                    className="flex-1 bg-blue-600 text-white py-2 rounded disabled:opacity-50"
-                                >
-                                    {editId ? 'Update Route' : 'Save Route'}
-                                </button>
-                                <button 
-                                    onClick={handleCancel}
-                                    className="px-4 py-2 border rounded hover:bg-gray-50"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
+    // VIEW 2: MAP EDITOR (CREATE/EDIT)
+    return (
+        <div className="relative w-full h-full bg-slate-900 overflow-hidden">
+            {/* Full Screen Map */}
+            <div className="absolute inset-0 z-0">
+                 <MapComponent 
+                    stops={stops} 
+                    center={mapCenter} 
+                    tempMarker={tempMarker}
+                    onMapClick={handleMapClick}
+                 />
+            </div>
+
+            {/* Floating Left Panel - Editor Form */}
+            <div className="absolute top-4 left-4 bottom-4 w-[450px] z-10 flex flex-col pointer-events-none">
+                <div className="flex-1 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl shadow-2xl overflow-hidden pointer-events-auto flex flex-col">
+                    
+                    {/* Header */}
+                    <div className="p-6 border-b border-slate-700 shrink-0">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold text-white">{editId ? 'Edit Route' : 'New Route Plan'}</h2>
+                            <button onClick={handleCancel} className="text-slate-400 hover:text-white px-3 py-1 rounded hover:bg-white/10 text-sm transition-colors">
+                                Cancel
+                            </button>
                         </div>
+                        <input 
+                            className="w-full bg-slate-800 border border-slate-600 p-3 rounded-xl text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder:text-slate-500 transition-all font-medium text-lg" 
+                            value={routeName} 
+                            onChange={e => setRouteName(e.target.value)} 
+                            placeholder="Route Name (e.g. Route 5)"
+                        />
+                    </div>
+
+                    {/* Scrollable Content */}
+                    <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
                         
-                        <div className="flex-1 h-96 bg-gray-50 rounded border flex flex-col">
-                            <div className="p-2 border-b flex gap-2">
+                        {/* Search & Add Section */}
+                        <div className="space-y-4">
+                             <div className="flex gap-2">
                                 <input 
-                                    className="flex-1 border p-1 rounded text-sm"
-                                    placeholder="Search for a city or place..."
+                                    className="flex-1 bg-slate-800 border border-slate-600 p-2.5 rounded-lg text-sm text-white focus:border-blue-500 outline-none"
+                                    placeholder="Search location..."
                                     value={searchQuery}
                                     onChange={e => setSearchQuery(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && handleSearch()}
                                 />
                                 <button 
                                     onClick={handleSearch}
-                                    className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 font-medium"
                                 >
                                     Search
                                 </button>
                             </div>
-                             <MapComponent 
-                                stops={stops} 
-                                center={mapCenter} 
-                                tempMarker={tempMarker}
-                                onMapClick={handleMapClick}
-                             />
+
+                            <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 space-y-3">
+                                <h3 className="text-sm font-bold text-blue-400 uppercase tracking-wider">Add Stop</h3>
+                                <input 
+                                    className="w-full bg-slate-800 border border-slate-600 p-2.5 rounded-lg text-white text-sm outline-none focus:border-blue-500" 
+                                    value={stopName} 
+                                    onChange={e => setStopName(e.target.value)} 
+                                    placeholder="Stop Name (Auto-fills)"
+                                />
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div className="bg-slate-900 border border-slate-700 p-2 rounded text-slate-400 truncate">
+                                        Lat: {stopLat || 'Click Map'}
+                                    </div>
+                                    <div className="bg-slate-900 border border-slate-700 p-2 rounded text-slate-400 truncate">
+                                        Lng: {stopLng || 'Click Map'}
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={handleAddStop} 
+                                    disabled={!stopName || !stopLat}
+                                    className="w-full bg-violet-600 disabled:bg-slate-700 disabled:text-slate-500 text-white py-2.5 rounded-lg font-medium hover:bg-violet-700 transition-all shadow-lg shadow-violet-900/20"
+                                >
+                                    + Add to Route
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Sequence List */}
+                        <div>
+                            <div className="flex justify-between items-center mb-3">
+                                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">Stops Sequence</h3>
+                                <span className="text-xs text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full">{stops.length} Stops</span>
+                            </div>
+                            
+                            <div className="space-y-2">
+                                {stops.length === 0 && (
+                                    <div className="text-center py-8 text-slate-600 text-sm border-2 border-dashed border-slate-700 rounded-xl">
+                                        No stops added yet.
+                                    </div>
+                                )}
+                                {stops.map((s, i) => (
+                                    <div key={i} className="flex justify-between items-center p-3 bg-slate-800 rounded-lg border border-slate-700 group hover:border-slate-600 transition-colors">
+                                        <div className="flex items-center gap-3 overflow-hidden">
+                                            <div className="w-6 h-6 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-xs font-bold border border-slate-600">
+                                                {i + 1}
+                                            </div>
+                                            <span className="text-slate-200 text-sm truncate">{s.name}</span>
+                                        </div>
+                                        <button 
+                                            onClick={() => setStops(stops.filter((_, idx) => idx !== i))}
+                                            className="text-slate-500 hover:text-red-400 p-1 rounded transition-colors"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
-                )}
+
+                    {/* Footer Actions */}
+                    <div className="p-6 border-t border-slate-700 shrink-0 bg-slate-900/50">
+                        <button 
+                            onClick={handleSaveRoute} 
+                            disabled={!routeName || stops.length === 0}
+                            className="w-full bg-blue-600 disabled:bg-slate-800 disabled:text-slate-600 text-white py-3 rounded-xl font-bold hover:bg-blue-500 transition-all shadow-lg active:scale-95"
+                        >
+                            {editId ? 'Update Route Plan' : 'Save New Route'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Helper Toast/Overlay (Optional) */}
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-0 pointer-events-none">
+                 <div className="bg-slate-900/80 backdrop-blur text-white px-4 py-2 rounded-full text-xs font-medium shadow-xl border border-white/10">
+                    Click on the map to add stops accurately
+                 </div>
             </div>
         </div>
     );

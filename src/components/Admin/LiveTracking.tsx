@@ -65,80 +65,10 @@ const LiveTracking = () => {
     const selectedRoute = selectedBus ? getRouteDetails(selectedBus.routeId).route : undefined;
 
     return (
-        <div className="flex h-full bg-gray-100 overflow-hidden">
-            {/* Sidebar List */}
-            <div className="w-80 bg-white shadow-lg z-10 flex flex-col border-r">
-                <div className="p-4 border-b bg-gray-50">
-                    <h2 className="font-bold text-lg flex items-center gap-2">
-                        <MapPin className="text-blue-600" />
-                        Live Fleet
-                    </h2>
-                    <p className="text-xs text-gray-500 mt-1">
-                        {activeBuses.length} Active Vehicles
-                    </p>
-                </div>
-                
-                <div className="flex-1 overflow-y-auto p-2 space-y-2">
-                    {activeBuses.length === 0 && (
-                        <div className="text-center text-gray-400 mt-10 p-4">
-                            <Bus size={40} className="mx-auto mb-2 opacity-50" />
-                            <p>No active vehicles found.</p>
-                        </div>
-                    )}
-                    
-                    {activeBuses.map(bus => {
-                        const van = getVanDetails(bus.vanId);
-                        const route = getRouteDetails(bus.routeId);
-                        const isSelected = selectedBusId === bus.busId;
-
-                        return (
-                            <div 
-                                key={bus.busId}
-                                onClick={() => setSelectedBusId(bus.busId)}
-                                className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                                    isSelected 
-                                    ? 'bg-blue-50 border-blue-500 shadow-md' 
-                                    : 'hover:bg-gray-50 border-gray-200'
-                                }`}
-                            >
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h3 className="font-bold text-gray-800">{van.number}</h3>
-                                        <p className="text-xs text-gray-500">{route.name}</p>
-                                    </div>
-                                    <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                        bus.arrivalStatus === 'arriving' ? 'bg-orange-100 text-orange-700' :
-                                        bus.arrivalStatus === 'arrived' ? 'bg-red-100 text-red-700' :
-                                        'bg-green-100 text-green-700'
-                                    }`}>
-                                        {bus.arrivalStatus?.replace('_', ' ') || 'EN ROUTE'}
-                                    </div>
-                                </div>
-                                
-                                <div className="flex items-center gap-4 text-xs text-gray-600">
-                                    <div className="flex items-center gap-1" title="Speed">
-                                        <Navigation size={12} />
-                                        {Math.round((bus.speed || 0) * 3.6)} km/h
-                                    </div>
-                                    {bus.nextStopName && (
-                                        <div className="flex items-center gap-1 truncate max-w-[120px]" title="Next Stop">
-                                            <MapPin size={12} />
-                                            {bus.nextStopName}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="text-[10px] text-gray-400 mt-2 text-right flex items-center justify-end gap-1">
-                                    <Clock size={10} />
-                                    Updated {Math.floor((Date.now() - bus.updatedAt)/1000)}s ago
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* Map Area */}
-            <div className="flex-1 relative">
+        <div className="relative w-full h-full bg-slate-900 overflow-hidden">
+            
+            {/* Map Background - Full Screen */}
+            <div className="absolute inset-0 z-0">
                  <MapComponent 
                     // If selected bus exists, center on it. Else center on default.
                     center={selectedBus ? [selectedBus.lat, selectedBus.lng] : undefined}
@@ -147,31 +77,113 @@ const LiveTracking = () => {
                     stops={selectedRoute?.stops} // Show stops only for selected route
                     onBusClick={(bus: BusLocation) => setSelectedBusId(bus.busId)}
                  />
-                 
-                 {selectedBus && (
-                     <div className="absolute bottom-6 left-6 right-6 bg-white p-4 rounded-lg shadow-xl z-[1000] max-w-2xl mx-auto flex gap-6 items-center animate-slide-up">
-                         <div className="bg-blue-100 p-3 rounded-full">
-                             <Bus className="text-blue-600" size={24} />
-                         </div>
-                         <div className="flex-1 border-r pr-6">
-                             <h3 className="font-bold text-lg">{getVanDetails(selectedBus.vanId).number}</h3>
-                             <p className="text-gray-500 text-sm">{getRouteDetails(selectedBus.routeId).name}</p>
-                         </div>
-                         <div className="flex-1">
-                              <p className="text-xs text-gray-500 uppercase font-bold">Next Stop</p>
-                              <p className="font-semibold text-gray-800">{selectedBus.nextStopName || 'N/A'}</p>
-                         </div>
-                         <div className="flex-1">
-                             <p className="text-xs text-gray-500 uppercase font-bold">Status</p>
-                             <p className={`font-semibold ${
-                                 selectedBus.arrivalStatus === 'arriving' ? 'text-orange-600' : 'text-green-600'
-                             }`}>
-                                 {selectedBus.arrivalStatus?.toUpperCase().replace('_', ' ') || 'On Track'}
-                             </p>
-                         </div>
-                     </div>
-                 )}
             </div>
+
+            {/* Floating Left Panel - Controls & List */}
+            <div className="absolute top-4 left-4 bottom-4 w-96 z-10 flex flex-col gap-4 pointer-events-none">
+                
+                {/* Header Card */}
+                <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl shadow-2xl p-6 pointer-events-auto">
+                    <h2 className="font-bold text-xl text-white flex items-center gap-3">
+                        <div className="p-2 bg-blue-600/20 rounded-lg">
+                            <MapPin className="text-blue-400" size={20} />
+                        </div>
+                        Live Fleet
+                    </h2>
+                    <p className="text-sm text-slate-400 mt-2 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        {activeBuses.length} Active Vehicles
+                    </p>
+                </div>
+
+                {/* List Container */}
+                <div className="flex-1 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl shadow-2xl overflow-hidden pointer-events-auto flex flex-col">
+                    <div className="overflow-y-auto p-4 space-y-3 custom-scrollbar h-full">
+                        {activeBuses.length === 0 && (
+                            <div className="text-center text-slate-500 mt-10 p-4">
+                                <Bus size={40} className="mx-auto mb-4 opacity-50" />
+                                <p>No active vehicles found.</p>
+                            </div>
+                        )}
+                        
+                        {activeBuses.map(bus => {
+                            const van = getVanDetails(bus.vanId);
+                            const route = getRouteDetails(bus.routeId);
+                            const isSelected = selectedBusId === bus.busId;
+
+                            return (
+                                <div 
+                                    key={bus.busId}
+                                    onClick={() => setSelectedBusId(bus.busId)}
+                                    className={`p-4 rounded-xl border transition-all cursor-pointer group ${
+                                        isSelected 
+                                        ? 'bg-blue-600/20 border-blue-500/50 shadow-lg shadow-blue-900/20' 
+                                        : 'bg-slate-800/50 border-slate-700 hover:bg-slate-800 hover:border-slate-600'
+                                    }`}
+                                >
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 className={`font-bold text-base ${isSelected ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
+                                                {van.number}
+                                            </h3>
+                                            <p className="text-xs text-slate-400 mt-1">{route.name}</p>
+                                        </div>
+                                        <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                                            bus.arrivalStatus === 'arriving' ? 'bg-orange-500/20 text-orange-400' :
+                                            bus.arrivalStatus === 'arrived' ? 'bg-red-500/20 text-red-400' :
+                                            'bg-emerald-500/20 text-emerald-400'
+                                        }`}>
+                                            {bus.arrivalStatus?.replace('_', ' ') || 'EN ROUTE'}
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-4 text-xs text-slate-400">
+                                        <div className="flex items-center gap-1.5" title="Speed">
+                                            <Navigation size={12} />
+                                            {Math.round((bus.speed || 0) * 3.6)} km/h
+                                        </div>
+                                        {bus.nextStopName && (
+                                            <div className="flex items-center gap-1.5 truncate max-w-[140px]" title="Next Stop">
+                                                <MapPin size={12} />
+                                                {bus.nextStopName}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="text-[10px] text-slate-600 mt-3 pt-3 border-t border-slate-700/50 text-right flex items-center justify-end gap-1.5">
+                                        <Clock size={10} />
+                                        Updated {Math.floor((Date.now() - bus.updatedAt)/1000)}s ago
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+
+            {/* Floating Selection Detail Card (Bottom Center) */}
+            {selectedBus && (
+                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-xl border border-slate-700 p-5 rounded-2xl shadow-2xl z-20 min-w-[500px] flex gap-6 items-center animate-up-fade">
+                     <div className="bg-blue-600/20 p-4 rounded-full border border-blue-500/30">
+                         <Bus className="text-blue-400" size={28} />
+                     </div>
+                     <div className="flex-1 border-r border-slate-700 pr-6">
+                         <h3 className="font-bold text-xl text-white">{getVanDetails(selectedBus.vanId).number}</h3>
+                         <p className="text-slate-400 text-sm">{getRouteDetails(selectedBus.routeId).name}</p>
+                     </div>
+                     <div className="flex-1 pl-2">
+                          <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Next Stop</p>
+                          <p className="font-semibold text-slate-200">{selectedBus.nextStopName || 'N/A'}</p>
+                     </div>
+                     <div className="flex-1">
+                         <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Status</p>
+                         <p className={`font-semibold ${
+                             selectedBus.arrivalStatus === 'arriving' ? 'text-orange-400' : 'text-emerald-400'
+                         }`}>
+                             {selectedBus.arrivalStatus?.toUpperCase().replace('_', ' ') || 'On Track'}
+                         </p>
+                     </div>
+                 </div>
+            )}
         </div>
     );
 };

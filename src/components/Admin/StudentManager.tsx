@@ -82,77 +82,87 @@ const StudentManager = () => {
     };
 
     return (
-        <div className="h-full flex flex-col">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Student Management</h2>
+        <div className="h-full flex flex-col bg-gray-50 p-6 overflow-hidden">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 tracking-tight">Student Management</h2>
 
-            <div className="flex gap-6 h-full">
+            <div className="flex gap-6 h-full min-h-0">
                 {/* List Section */}
-                <div className="flex-1 bg-white rounded-lg shadow p-4 overflow-auto">
-                    <h3 className="font-semibold mb-4">All Students</h3>
-                    {loading ? <p>Loading...</p> : (
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="border-b">
-                                    <th className="p-2">Name</th>
-                                    <th className="p-2">Email</th>
-                                    <th className="p-2">Assigned Van</th>
-                                    <th className="p-2">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {students.map(student => (
-                                    <tr key={student.uid} className="border-b hover:bg-gray-50">
-                                        <td className="p-2">{student.name}</td>
-                                        <td className="p-2">{student.email}</td>
-                                        <td className="p-2">
-                                            {vans.find(v => v.id === student.vanId)?.vanNumber || 'Unassigned'}
-                                        </td>
-                                        <td className="p-2">
-                                            <button 
-                                                onClick={() => startEdit(student)}
-                                                className="text-blue-600 hover:underline mr-2"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button 
-                                                onClick={() => handleDelete(student.uid)}
-                                                className="text-red-600 hover:underline"
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
+                <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-6 overflow-hidden flex flex-col">
+                    <h3 className="font-semibold text-gray-700 mb-4 text-lg">All Students</h3>
+                    <div className="flex-1 overflow-auto pr-2 custom-scrollbar">
+                        {loading ? <p className="text-gray-400">Loading...</p> : (
+                            <table className="w-full text-left border-separate border-spacing-y-2">
+                                <thead className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider sticky top-0 z-10">
+                                    <tr>
+                                        <th className="p-3 font-semibold rounded-l-lg">Name</th>
+                                        <th className="p-3 font-semibold">Email</th>
+                                        <th className="p-3 font-semibold">Assigned Van</th>
+                                        <th className="p-3 font-semibold rounded-r-lg">Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
+                                </thead>
+                                <tbody>
+                                    {students.map(student => (
+                                        <tr key={student.uid} className="hover:bg-gray-50 transition-colors group">
+                                            <td className="p-3 border-b border-gray-100 group-hover:border-transparent rounded-l-lg bg-white group-hover:bg-gray-50">{student.name}</td>
+                                            <td className="p-3 border-b border-gray-100 group-hover:border-transparent bg-white group-hover:bg-gray-50 text-gray-600">{student.email}</td>
+                                            <td className="p-3 border-b border-gray-100 group-hover:border-transparent bg-white group-hover:bg-gray-50">
+                                                <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+                                                    vans.find(v => v.id === student.vanId) 
+                                                    ? 'bg-blue-50 text-blue-600' 
+                                                    : 'bg-gray-100 text-gray-500'
+                                                }`}>
+                                                    {vans.find(v => v.id === student.vanId)?.vanNumber || 'Unassigned'}
+                                                </span>
+                                            </td>
+                                            <td className="p-3 border-b border-gray-100 group-hover:border-transparent rounded-r-lg bg-white group-hover:bg-gray-50">
+                                                <button 
+                                                    onClick={() => startEdit(student)}
+                                                    className="text-blue-600 hover:text-blue-800 font-medium text-sm mr-3 transition-colors"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDelete(student.uid)}
+                                                    className="text-red-500 hover:text-red-700 font-medium text-sm transition-colors"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
                 </div>
 
                 {/* Form Section */}
-                <div className="w-1/3 bg-white rounded-lg shadow p-4 h-fit">
-                    <h3 className="font-semibold mb-4">{isEditing ? 'Edit Student' : 'Add New Student'}</h3>
-                    <div className="space-y-4">
-                        <div>
+                <div className="w-96 bg-white rounded-xl shadow-sm border border-gray-100 p-6 h-fit shrink-0">
+                    <h3 className="font-bold text-gray-800 mb-6 text-lg">{isEditing ? 'Edit Student' : 'Add New Student'}</h3>
+                    <div className="space-y-5">
+                        <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">Name</label>
                             <input 
-                                className="w-full border p-2 rounded"
+                                className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                                 value={formData.name || ''}
                                 onChange={e => setFormData({...formData, name: e.target.value})}
+                                placeholder="Enter student name"
                             />
                         </div>
-                        <div>
+                        <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">Email</label>
                             <input 
-                                className="w-full border p-2 rounded"
+                                className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all disabled:bg-gray-50 disabled:text-gray-500"
                                 value={formData.email || ''}
                                 onChange={e => setFormData({...formData, email: e.target.value})}
-                                disabled={isEditing} // Assume email is unique ID/key for now or just restrict editing
+                                disabled={isEditing} 
+                                placeholder="student@school.com"
                             />
                         </div>
-                        <div>
+                        <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">Assigned Van</label>
                             <select 
-                                className="w-full border p-2 rounded"
+                                className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all bg-white"
                                 value={formData.vanId || ''}
                                 onChange={e => setFormData({...formData, vanId: e.target.value})}
                             >
@@ -163,12 +173,12 @@ const StudentManager = () => {
                             </select>
                         </div>
 
-                        <div className="flex gap-2 pt-4">
+                        <div className="flex gap-3 pt-4">
                             <button 
                                 onClick={handleSave}
-                                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                                className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 font-medium transition-all shadow-sm active:scale-95"
                             >
-                                {isEditing ? 'Update' : 'Add'}
+                                {isEditing ? 'Update Student' : 'Add Student'}
                             </button>
                             {isEditing && (
                                 <button 
@@ -177,7 +187,7 @@ const StudentManager = () => {
                                         setEditId(null);
                                         setFormData({ email: '', name: '', role: 'student', vanId: '' });
                                     }}
-                                    className="px-4 py-2 border rounded hover:bg-gray-50"
+                                    className="px-4 py-2.5 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 font-medium transition-all"
                                 >
                                     Cancel
                                 </button>

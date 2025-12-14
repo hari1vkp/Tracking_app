@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { routeService, locationService, vanService, userService } from '../services/db';
 import type { Route, BusLocation, Van } from '../types';
-import { MapPin, Bus, Save } from 'lucide-react';
+import { MapPin, Bus } from 'lucide-react';
 import MapComponent from '../components/Map/MapComponent';
 
 const StudentDashboard = () => {
@@ -90,42 +90,45 @@ const StudentDashboard = () => {
 
     if (showSetup) {
         return (
-            <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-[1000]">
-                <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-                    <h2 className="text-2xl font-bold text-blue-600 mb-6 flex items-center gap-2">
-                        <MapPin /> Setup Child Profile
+            <div className="fixed inset-0 bg-slate-900 flex items-center justify-center z-[1000] p-4">
+                <div className="bg-slate-800 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-slate-700">
+                    <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                        <div className="bg-blue-600/20 p-2 rounded-lg">
+                            <MapPin className="text-blue-500" />
+                        </div>
+                        Setup Child Profile
                     </h2>
-                    <p className="text-gray-600 mb-6">
-                        Before we start, please provide your child's details to track the correct bus.
+                    <p className="text-slate-400 mb-8 border-l-4 border-blue-600 pl-4 py-1">
+                        Please provide your child's details to sync with the correct school bus.
                     </p>
 
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Student Name</label>
+                    <div className="space-y-5">
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Student Name</label>
                             <input 
-                                className="w-full border rounded p-2"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-600"
                                 placeholder="Enter Full Name"
                                 value={setupName}
                                 onChange={e => setSetupName(e.target.value)}
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
+                        <div className="space-y-1">
+                             <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Student ID</label>
                             <input 
-                                className="w-full border rounded p-2"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-600"
                                 placeholder="Enter School ID"
                                 value={setupStudentId}
                                 onChange={e => setSetupStudentId(e.target.value)}
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Van / Bus</label>
+                        <div className="space-y-1">
+                             <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Assigned Bus</label>
                             <select 
-                                className="w-full border rounded p-2"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                                 value={setupVanId}
                                 onChange={e => setSetupVanId(e.target.value)}
                             >
-                                <option value="">-- Select Bus --</option>
+                                <option value="" className="text-slate-500">-- Select Bus --</option>
                                 {vans.map(v => (
                                     <option key={v.id} value={v.id}>{v.vanNumber} {v.routeId ? '(Allocated)' : ''}</option>
                                 ))}
@@ -135,9 +138,9 @@ const StudentDashboard = () => {
                         <button 
                             onClick={handleSaveSetup}
                             disabled={isSaving}
-                            className={`w-full py-3 rounded-lg font-bold text-white shadow ${isSaving ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
+                            className={`w-full py-3.5 rounded-xl font-bold text-white shadow-lg transition-all transform active:scale-[0.98] ${isSaving ? 'bg-slate-700 text-slate-500' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-900/40'}`}
                         >
-                            {isSaving ? 'Saving...' : 'Start Tracking'}
+                            {isSaving ? 'Saving Profile...' : 'Start Tracking'}
                         </button>
                     </div>
                 </div>
@@ -146,39 +149,69 @@ const StudentDashboard = () => {
     }
 
     return (
-        <div className="flex flex-col h-screen bg-gray-100">
-             <div className="bg-white shadow p-4 flex justify-between items-center z-10">
-                <div>
-                     <h1 className="text-xl font-bold flex items-center gap-2 text-gray-800">
-                        <MapPin className="text-blue-600" />
-                        Student Tracker
-                    </h1>
-                    <p className="text-xs text-gray-500">
-                        Tracking for <span className="font-bold text-blue-600">{userProfile?.studentName}</span> • Bus: {assignedVan?.vanNumber || '...'}
-                    </p>
+        <div className="relative w-full h-screen bg-slate-900 overflow-hidden">
+             {/* Header */}
+             <div className="absolute top-0 left-0 w-full p-4 z-20 flex justify-between items-start pointer-events-none">
+                <div className="bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-700 shadow-xl pointer-events-auto flex flex-col md:flex-row md:items-center gap-4">
+                    <div className="flex items-center gap-3">
+                         <div className="p-2 bg-blue-600/20 rounded-lg">
+                            <Bus className="text-blue-500 w-6 h-6" />
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-bold text-white leading-tight">Student Tracker</h1>
+                             <p className="text-xs text-slate-400">
+                                Tracking: <span className="font-semibold text-blue-400">{userProfile?.studentName}</span>
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 
-                <button onClick={logout} className="text-red-500 text-sm border border-red-200 px-3 py-1 rounded hover:bg-red-50">Logout</button>
+                <button 
+                    onClick={logout} 
+                    className="pointer-events-auto bg-slate-900/90 backdrop-blur-md hover:bg-red-500/90 hover:border-red-500 border border-slate-700 text-slate-300 hover:text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg"
+                >
+                    Logout
+                </button>
             </div>
 
-            <div className="flex-1 relative">
-                <div className="absolute top-4 left-4 right-4 z-[500] md:w-96">
-                    <div className="bg-white p-4 rounded-lg shadow-lg">
+            {/* Main Content */}
+            <div className="absolute inset-0 z-0">
+                {/* Status Card */}
+                <div className="absolute bottom-6 left-6 right-6 z-[500] flex justify-center pointer-events-none">
+                    <div className="bg-slate-900/95 backdrop-blur-xl p-6 rounded-3xl shadow-2xl border border-slate-700 w-full max-w-md pointer-events-auto">
                          {currentBus ? (
-                            <div className="bg-blue-50 border border-blue-100 p-3 rounded flex items-center justify-between">
-                                <div>
-                                    <p className="text-xs text-blue-600 font-bold uppercase">Status</p>
-                                    <p className="text-lg font-bold text-gray-800">{getETA()}</p>
-                                    {currentBus.nextStopName && (
-                                        <p className="text-sm text-gray-600">Next: {currentBus.nextStopName}</p>
-                                    )}
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between border-b border-slate-700 pb-4">
+                                    <div>
+                                        <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Estimated Arrival</p>
+                                        <p className={`text-2xl font-bold ${currentBus.arrivalStatus === 'arriving' ? 'text-green-400' : 'text-white'}`}>
+                                            {getETA()}
+                                        </p>
+                                    </div>
+                                    <div className={`p-3 rounded-full ${currentBus.arrivalStatus === 'arriving' ? 'bg-green-500/20 animate-pulse' : 'bg-slate-800'}`}>
+                                         <Bus className={`w-8 h-8 ${currentBus.arrivalStatus === 'arriving' ? 'text-green-500' : 'text-slate-500'}`} />
+                                    </div>
                                 </div>
-                                <Bus className={`w-8 h-8 ${currentBus.arrivalStatus === 'arriving' ? 'text-green-500 animate-bounce' : 'text-blue-400'}`} />
+                                
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p className="text-slate-500 text-xs mb-1">Current Stop</p>
+                                        <p className="text-slate-300 font-medium truncate">{currentBus.nextStopName || 'En route'}</p>
+                                    </div>
+                                    <div className="text-right">
+                                         <p className="text-slate-500 text-xs mb-1">Bus Number</p>
+                                         <p className="text-slate-300 font-medium">{assignedVan?.vanNumber || 'Unknown'}</p>
+                                    </div>
+                                </div>
                             </div>
                         ) : (
-                             <p className="text-sm text-gray-500 italic text-center py-2">
-                                Bus is currently offline or hasn't started the trip.
-                             </p>
+                             <div className="text-center py-6">
+                                <div className="inline-block p-4 rounded-full bg-slate-800 mb-4 animate-pulse">
+                                    <Bus className="w-8 h-8 text-slate-600" />
+                                </div>
+                                <p className="text-slate-300 font-bold mb-1">Bus is currently offline</p>
+                                <p className="text-slate-500 text-sm">The driver has not started the trip yet.</p>
+                             </div>
                         )}
                     </div>
                 </div>
@@ -190,6 +223,9 @@ const StudentDashboard = () => {
                     buses={buses}
                 />
             </div>
+            
+            {/* Top Gradient */}
+            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-900/90 to-transparent pointer-events-none z-10"></div>
         </div>
     );
 };
