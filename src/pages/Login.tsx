@@ -178,7 +178,7 @@ const Login = () => {
               >
                 <option value="student" className="bg-slate-800 text-white">Student/Parent</option>
                 <option value="driver" className="bg-slate-800 text-white">Bus Driver</option>
-                <option value="admin" className="bg-slate-800 text-white">Administrator</option>
+
               </select>
             </div>
           )}
