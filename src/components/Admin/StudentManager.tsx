@@ -95,7 +95,7 @@ const StudentManager = () => {
                                 <thead className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider sticky top-0 z-10">
                                     <tr>
                                         <th className="p-3 font-semibold rounded-l-lg">Name</th>
-                                        <th className="p-3 font-semibold">Email</th>
+                                        <th className="p-3 font-semibold">ID</th>
                                         <th className="p-3 font-semibold">Assigned Van</th>
                                         <th className="p-3 font-semibold rounded-r-lg">Actions</th>
                                     </tr>
@@ -150,13 +150,13 @@ const StudentManager = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700">Email</label>
+                            <label className="block text-sm font-medium text-gray-700">ID</label>
                             <input 
                                 className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all disabled:bg-gray-50 disabled:text-gray-500"
                                 value={formData.email || ''}
                                 onChange={e => setFormData({...formData, email: e.target.value})}
                                 disabled={isEditing} 
-                                placeholder="student@school.com"
+                                placeholder="Enter ID"
                             />
                         </div>
                         <div className="space-y-2">

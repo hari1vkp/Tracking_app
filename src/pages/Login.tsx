@@ -115,7 +115,7 @@ const Login = () => {
                     <div className="w-full border-t border-white/10"></div>
                 </div>
                 <div className="relative flex justify-center text-xs uppercase tracking-wider font-semibold">
-                    <span className="px-4 bg-transparent text-slate-400">Or continue with email</span>
+                    <span className="px-4 bg-transparent text-slate-400">Or continue with ID</span>
                 </div>
             </div>
         </div>
@@ -139,14 +139,14 @@ const Login = () => {
           )}
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-300 ml-1 uppercase tracking-wide">Email</label>
+            <label className="text-xs font-semibold text-slate-300 ml-1 uppercase tracking-wide">ID</label>
             <div className="relative group">
               <Mail className="w-5 h-5 text-slate-400 absolute left-3 top-3.5 transition-colors group-focus-within:text-blue-400" />
               <input
                 type="email"
                 required
                 className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700/50 text-white rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all placeholder:text-slate-500"
-                placeholder="you@example.com"
+                placeholder="Enter your ID"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
